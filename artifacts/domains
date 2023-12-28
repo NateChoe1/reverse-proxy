@@ -1,0 +1,4 @@
+example.com	dynamic-dns-server-host.domainname.com
+www.example.com	dynamic-dns-server-host.domainname.com
+example.org	192.168.1.50
+www.example.org	192.168.1.50

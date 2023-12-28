@@ -1,0 +1,37 @@
+# Redirect all http to https by default
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 301 https://$host$request_uri;
+}
+
+# mail.natechoe.dev TLS certificates have to stored on the FreeBSD server, but I
+# (Nate) can't renew these certificates without either writing a script to
+# modify DNS records (I don't want to do that) or having access to http. http
+# requests to our house always go to this server, so I just proxy it.
+server {
+	listen 80;
+	server_name mail.natechoe.dev mail.29r-03.com mail.agilesalt.net mail.koreanalive.com mail.realisticdata.com;
+	location / {
+# Let's Encrypt challenge from EFF servers ->
+# 45.19.51.169:80 ->
+# 192.168.50.63:80 ->
+# reverse-proxy ->
+# 192.168.50.63:81 ->
+# cert-getter
+		proxy_pass http://192.168.50.191:81;
+		proxy_set_header Host 'mail.natechoe.dev';
+		proxy_http_version 1.1;
+	}
+}
+
+server {
+	listen 80;
+	server_name http.natechoe.com;
+	location / {
+		proxy_pass https://natechoe.com;
+		proxy_set_header Host 'natechoe.com';
+		proxy_http_version 1.1;
+	}
+}
